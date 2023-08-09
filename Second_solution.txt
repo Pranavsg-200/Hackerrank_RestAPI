@@ -1,0 +1,43 @@
+const axios = require('axios');
+/*
+ * Complete the 'getWinnerTotalGoals' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts following parameters:
+ *  1. STRING competition
+ *  2. INTEGER year
+ */
+
+async function getWinnerTotalGoals(competition, year) {
+    const apiResponse = await axios.get(`https://jsonmock.hackerrank.com/api/football_competitions?name=${competition}&year=${year}`)
+    const result1 = apiResponse.data;
+    if(result1 && result1.data){
+        const item = result1.data[0];
+        const winnerTeam = item.winner;
+        console.log(winnerTeam);
+        let count = 0;
+        
+        
+        const response1 = await axios.get(`https://jsonmock.hackerrank.com/api/football_matches?competition=${competition}&year=${year}&team1=${winnerTeam}`)
+        const pages = response1.data.total_pages;
+        for(let k=1; k<=pages; k++){
+             const result2 = await axios.get(`https://jsonmock.hackerrank.com/api/football_matches?competition=${competition}&year=${year}&team1=${winnerTeam}&page=${k}`)
+             const outcome1 = result2.data;
+             for(const item of outcome1.data){
+                 count = count + Number(item.team1goals)
+             }
+        }
+        
+       const response2 = await axios.get(`https://jsonmock.hackerrank.com/api/football_matches?competition=${competition}&year=${year}&team2=${winnerTeam}`)
+        const pages2 = response2.data.total_pages;
+        for(let k=1; k<=pages2; k++){
+             const result3 = await axios.get(`https://jsonmock.hackerrank.com/api/football_matches?competition=${competition}&year=${year}&team2=${winnerTeam}&page=${k}`)
+             const outcome2 = result3.data;
+             for(const item of outcome2.data){
+                 count = count + Number(item.team2goals)
+             }
+        }
+        
+        return count; 
+    }
+}
