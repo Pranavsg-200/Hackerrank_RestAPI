@@ -1,0 +1,24 @@
+const axios = require('axios');
+/*
+ * Complete the 'getNumDraws' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts INTEGER year as parameter.
+ */
+
+async function getNumDraws(year) {
+    let count = 0;
+    const response = await axios.get(`https://jsonmock.hackerrank.com/api/football_matches?year=${year}`)
+    const result = response.data;
+    const {total_pages} = result;
+    for(let k = 1; k < total_pages; k++) {
+        const response = await axios.get(`https://jsonmock.hackerrank.com/api/football_matches?year=${year}&pages=${k}`)
+        const result = response.data;
+        for(const item of result.data){
+            if(item.team1goals === item.team2goals){
+                count++;
+            }
+        }
+    }
+    return count;
+}
